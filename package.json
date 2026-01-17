@@ -5,8 +5,8 @@
   "main": "dist/monkeysjs.cjs",
   "module": "dist/monkeysjs.esm.js",
   "browser": "dist/monkeysjs.min.js",
-  "unpkg": "dist/monkeysjs.min.js",
-  "jsdelivr": "dist/monkeysjs.min.js",
+  "unpkg": "dist/monkeysjs.umd.js",
+  "jsdelivr": "dist/monkeysjs.umd.js",
   "types": "dist/monkeysjs.d.ts",
   "sideEffects": false,
   "publishConfig": {
