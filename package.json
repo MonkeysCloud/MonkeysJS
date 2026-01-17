@@ -15,9 +15,9 @@
   "exports": {
     ".": {
       "types": "./dist/monkeysjs.d.ts",
+      "browser": "./dist/monkeysjs.min.js",
       "import": "./dist/monkeysjs.esm.js",
       "require": "./dist/monkeysjs.cjs",
-      "browser": "./dist/monkeysjs.min.js",
       "default": "./dist/monkeysjs.cjs"
     }
   },
