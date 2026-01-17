@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MonkeysJS Demo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 0.5rem;
+      font-size: 1.75rem;
+    }
+    
+    h2 {
+      color: #667eea;
+      margin-bottom: 1rem;
+      font-size: 1.25rem;
+    }
+    
+    .subtitle {
+      color: #666;
+      margin-bottom: 1.5rem;
+    }
+    
+    input[type="text"],
+    input[type="email"] {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+      margin-bottom: 1rem;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .counter {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    
+    .counter-value {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #667eea;
+      min-width: 80px;
+      text-align: center;
+    }
+    
+    .counter button {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      padding: 0;
+    }
+    
+    .todo-list {
+      list-style: none;
+    }
+    
+    .todo-item {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      transition: background 0.2s;
+    }
+    
+    .todo-item:hover {
+      background: #e9ecef;
+    }
+    
+    .todo-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-right: 1rem;
+      cursor: pointer;
+    }
+    
+    .todo-item .text {
+      flex: 1;
+      transition: all 0.2s;
+    }
+    
+    .todo-item .text.done {
+      text-decoration: line-through;
+      color: #999;
+    }
+    
+    .todo-item .delete {
+      background: #ff4757;
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      border-radius: 50%;
+      font-size: 1.2rem;
+    }
+    
+    .todo-form {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .todo-form input {
+      flex: 1;
+      margin-bottom: 0;
+    }
+    
+    .greeting {
+      font-size: 1.5rem;
+      color: #333;
+      padding: 1rem;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+      border-radius: 8px;
+      text-align: center;
+    }
+    
+    .stats {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .stat {
+      flex: 1;
+      text-align: center;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #667eea;
+    }
+    
+    .stat-label {
+      color: #666;
+      font-size: 0.875rem;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 2rem;
+      color: #999;
+    }
+    
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 1rem;
+      color: #666;
+    }
+    
+    .loading::after {
+      content: '';
+      width: 20px;
+      height: 20px;
+      border: 2px solid #667eea;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    [m-cloak] {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="card" style="text-align: center;">
+      <h1>🐒 MonkeysJS Demo</h1>
+      <p class="subtitle">A lightweight, reactive JavaScript library</p>
+    </div>
+
+    <!-- Counter Example -->
+    <div class="card" m-data="{ count: 0 }" m-cloak>
+      <h2>Counter</h2>
+      <div class="counter">
+        <button @click="count--">−</button>
+        <div class="counter-value" m-text="count"></div>
+        <button @click="count++">+</button>
+      </div>
+      <button @click="count = 0" style="width: 100%;">Reset</button>
+    </div>
+
+    <!-- Two-Way Binding Example -->
+    <div class="card" m-data="{ name: '' }" m-cloak>
+      <h2>Two-Way Binding</h2>
+      <input type="text" m-model="name" placeholder="Enter your name...">
+      <div class="greeting" m-show="name">
+        Hello, <strong m-text="name"></strong>! 👋
+      </div>
+      <div class="greeting" m-show="!name" style="color: #999;">
+        Type your name above...
+      </div>
+    </div>
+
+    <!-- Todo List Example -->
+    <div class="card" m-data="{
+      todos: [
+        { id: 1, text: 'Learn MonkeysJS', done: true },
+        { id: 2, text: 'Build something awesome', done: false },
+        { id: 3, text: 'Share with friends', done: false }
+      ],
+      newTodo: '',
+      nextId: 4,
+      addTodo() {
+        if (this.newTodo.trim()) {
+          this.todos.push({
+            id: this.nextId++,
+            text: this.newTodo.trim(),
+            done: false
+          });
+          this.newTodo = '';
+        }
+      },
+      removeTodo(id) {
+        this.todos = this.todos.filter(t => t.id !== id);
+      },
+      get remaining() {
+        return this.todos.filter(t => !t.done).length;
+      },
+      get completed() {
+        return this.todos.filter(t => t.done).length;
+      }
+    }" m-cloak>
+      <h2>Todo List</h2>
+      
+      <form class="todo-form" @submit.prevent="addTodo">
+        <input 
+          type="text" 
+          m-model="newTodo" 
+          placeholder="What needs to be done?"
+          @keyup.enter="addTodo"
+        >
+        <button type="submit">Add</button>
+      </form>
+      
+      <ul class="todo-list">
+        <template m-for="todo in todos">
+          <li class="todo-item">
+            <input type="checkbox" m-model="todo.done">
+            <span class="text" :class="{ done: todo.done }" m-text="todo.text"></span>
+            <button class="delete" @click="removeTodo(todo.id)">×</button>
+          </li>
+        </template>
+      </ul>
+      
+      <div class="empty-state" m-show="todos.length === 0">
+        No todos yet! Add one above.
+      </div>
+      
+      <div class="stats" m-show="todos.length > 0">
+        <div class="stat">
+          <div class="stat-value" m-text="todos.length"></div>
+          <div class="stat-label">Total</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" m-text="todos.filter(t => !t.done).length"></div>
+          <div class="stat-label">Remaining</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" m-text="todos.filter(t => t.done).length"></div>
+          <div class="stat-label">Completed</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dynamic Classes Example -->
+    <div class="card" m-data="{
+      isActive: false,
+      size: 'medium',
+      colors: ['#667eea', '#764ba2', '#ff4757', '#2ed573', '#ffa502']
+    }" m-cloak>
+      <h2>Dynamic Styling</h2>
+      
+      <div style="margin-bottom: 1rem;">
+        <button 
+          @click="isActive = !isActive"
+          :style="{ 
+            background: isActive ? '#2ed573' : '#ff4757',
+            transform: isActive ? 'scale(1.05)' : 'scale(1)'
+          }"
+        >
+          <span m-text="isActive ? '✓ Active' : '✗ Inactive'"></span>
+        </button>
+      </div>
+      
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        <template m-for="(color, index) in colors">
+          <div 
+            :style="{ 
+              width: '50px', 
+              height: '50px', 
+              background: color,
+              borderRadius: '8px',
+              cursor: 'pointer',
+              transition: 'transform 0.2s'
+            }"
+            @click="alert('Color: ' + color)"
+          ></div>
+        </template>
+      </div>
+    </div>
+
+    <!-- Fetch Example (simulated) -->
+    <div class="card" m-data="{
+      users: [],
+      loading: false,
+      async fetchUsers() {
+        this.loading = true;
+        // Simulate API call
+        await new Promise(r => setTimeout(r, 1000));
+        this.users = [
+          { id: 1, name: 'Alice Johnson', email: 'alice@example.com' },
+          { id: 2, name: 'Bob Smith', email: 'bob@example.com' },
+          { id: 3, name: 'Charlie Brown', email: 'charlie@example.com' }
+        ];
+        this.loading = false;
+      }
+    }" m-cloak>
+      <h2>Async Data Loading</h2>
+      
+      <button @click="fetchUsers" :disabled="loading" style="width: 100%; margin-bottom: 1rem;">
+        <span m-text="loading ? 'Loading...' : 'Load Users'"></span>
+      </button>
+      
+      <div class="loading" m-show="loading">
+        Fetching data...
+      </div>
+      
+      <ul class="todo-list" m-show="!loading && users.length > 0">
+        <template m-for="user in users">
+          <li class="todo-item" style="flex-direction: column; align-items: flex-start;">
+            <strong m-text="user.name"></strong>
+            <small style="color: #666;" m-text="user.email"></small>
+          </li>
+        </template>
+      </ul>
+      
+      <div class="empty-state" m-show="!loading && users.length === 0">
+        Click the button to load users
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="card" style="text-align: center; background: transparent; box-shadow: none; color: white;">
+      <p>Built with 🐒 MonkeysJS by <a href="https://monkeyscloud.com" style="color: white;">MonkeysCloud</a></p>
+    </div>
+  </div>
+
+  <!-- Include MonkeysJS -->
+  <script type="module">
+    // In production, you would use:
+    // import MonkeysJS from 'https://unpkg.com/monkeysjs';
+    
+    // For this demo, we're importing from the local build
+    import MonkeysJS from './dist/monkeysjs.esm.js';
+    
+    // MonkeysJS auto-initializes elements with m-data
+    // But we can also manually create apps:
+    
+    console.log('MonkeysJS loaded:', MonkeysJS.version);
+    
+    // Example of programmatic usage:
+    const { reactive, watch, computed } = MonkeysJS;
+    
+    const state = reactive({
+      count: 0
+    });
+    
+    const doubled = computed(() => state.count * 2);
+    
+    watch(() => state.count, (newVal, oldVal) => {
+      console.log(`Count changed: ${oldVal} → ${newVal} (doubled: ${doubled.value})`);
+    });
+    
+    // Make available globally for debugging
+    window.MonkeysJS = MonkeysJS;
+    window.demoState = state;
+  </script>
+</body>
+</html>
