@@ -105,6 +105,13 @@ export {
   snakeCase
 } from './utils/helpers.js';
 
+// Live Components
+export {
+  MLLive,
+  initLive,
+  destroyLive
+} from './live/index.js';
+
 // Import defaults for namespace
 import reactiveModule from './core/reactive.js';
 import httpModule from './http/client.js';
@@ -113,6 +120,7 @@ import domModule from './dom/binding.js';
 import formModule from './dom/form.js';
 import storageModule from './utils/storage.js';
 import utilsModule from './utils/helpers.js';
+import { MLLive } from './live/index.js';
 
 // Create MonkeysJS namespace
 const MonkeysJS = {
@@ -139,6 +147,9 @@ const MonkeysJS = {
 
   // Utils
   ...utilsModule,
+
+  // Live Components
+  live: MLLive,
 
   // Install as plugin (for compatibility)
   install(app, options = {}) {

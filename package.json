@@ -1,6 +1,6 @@
 {
   "name": "monkeysjs",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A lightweight, reactive JavaScript library with built-in HTTP client, declarative DOM binding, caching, WebSockets, and more",
   "main": "dist/monkeysjs.cjs",
   "module": "dist/monkeysjs.esm.js",
@@ -19,6 +19,9 @@
       "import": "./dist/monkeysjs.esm.js",
       "require": "./dist/monkeysjs.cjs",
       "default": "./dist/monkeysjs.cjs"
+    },
+    "./live": {
+      "import": "./src/live/index.js"
     }
   },
   "files": [
@@ -48,7 +51,11 @@
     "lightweight",
     "websocket",
     "caching",
-    "monkeyscloud"
+    "monkeyscloud",
+    "live",
+    "live-components",
+    "server-driven",
+    "dom-morphing"
   ],
   "author": "Jorge Peraza <jorge@monkeys.cloud>",
   "license": "MIT",

@@ -13,6 +13,7 @@
   <a href="#installation">Installation</a> •
   <a href="#quick-start">Quick Start</a> •
   <a href="#features">Features</a> •
+  <a href="#live-components">Live Components</a> •
   <a href="#documentation">Documentation</a> •
   <a href="#examples">Examples</a>
 </p>
@@ -38,6 +39,8 @@ MonkeysJS is designed to be a complete solution for modern web interfaces. Inste
 🔄 **Smart Data Fetching** - Declarative `m-fetch` for zero-boilerplate data loading.
 
 📦 **Zero Dependencies** - ~14KB gzipped. No bloat.
+
+⚡ **Live Components** - Server-driven reactive UI over the wire. Purpose-built DOM morphing, wire protocol batching, SSE streaming for AI, and chunked uploads. The client runtime for [monkeyslegion-live](https://github.com/monkeyscloud/monkeyslegion-live).
 
 ## Installation
 
@@ -162,6 +165,162 @@ import { useWebSocket } from "monkeysjs";
 
 const { send, data, isConnected } = useWebSocket("wss://api.example.com");
 ```
+
+---
+
+## Live Components
+
+**New in 1.0.2** — MonkeysJS ships a purpose-built live runtime for [monkeyslegion-live](https://github.com/monkeyscloud/monkeyslegion-live). Write PHP components, get a reactive UI over the wire — no SPA build step, no API layer.
+
+### Why not Alpine.js or Stimulus?
+
+MonkeysJS Live is designed against the MonkeysLegion wire protocol from the ground up. Hydration, batching, keyed DOM morphing, and streamed AI rendering are first-class — not bolted on.
+
+### Import
+
+```javascript
+import { ComponentManager, Wire, morph, StreamClient } from "monkeysjs/live";
+```
+
+Or load automatically via the PHP `@liveScripts` directive (no manual import needed).
+
+### Wire Protocol
+
+The `Wire` client batches concurrent state updates and action calls into a single HTTP round-trip per component.
+
+```javascript
+import { Wire } from "monkeysjs/live";
+
+const wire = new Wire("/_live");
+
+// Queue a state update (auto-batched)
+wire.queueUpdate("lc_abc123", "count", 5, snapshot);
+
+// Queue an action call (batched with the update above)
+wire.queueAction("lc_abc123", "increment", [], snapshot);
+
+// Register a response handler
+wire.onResponse("lc_abc123", (data) => {
+  console.log("New state:", data.state);
+});
+```
+
+### DOM Morphing
+
+The morph engine patches only what changed — keyed reconciliation, attribute-level diffing, focus/scroll preservation, and CSS transition safety.
+
+```javascript
+import { morph } from "monkeysjs/live";
+
+// Morph an existing element to match new HTML
+morph(existingElement, "<div><p>Updated content</p></div>");
+
+// Morph children only (keep root attributes)
+morph(existingElement, newHtml, { childrenOnly: true });
+```
+
+**Directives respected during morphing:**
+
+| Attribute | Effect |
+|-----------|--------|
+| `ml:ignore` | Skip this subtree entirely |
+| `ml:preserve` | Keep node identical across morphs |
+| `ml:replace` | Force full replacement |
+| `key` / `data-key` | Keyed reconciliation (stable identity) |
+
+### Component Manager
+
+The `ComponentManager` hydrates live components from the DOM, tracks state, and dispatches actions through the wire.
+
+```javascript
+import { ComponentManager } from "monkeysjs/live";
+
+const manager = new ComponentManager(wire);
+
+// Auto-mount all components on the page
+document.querySelectorAll("[data-ml-id]").forEach((el) => manager.mount(el));
+
+// Update state (triggers wire round-trip)
+manager.updateProperty("lc_abc123", "count", 10);
+
+// Call an action
+manager.callAction("lc_abc123", "increment");
+
+// Force re-render
+manager.refresh("lc_abc123");
+```
+
+### ml: Directive Set
+
+All directives are processed automatically after mount and after each morph.
+
+| Directive | Purpose |
+|-----------|---------|
+| `ml:model` | Two-way bind input → `#[State]` |
+| `ml:model.live` | Sync on every input event |
+| `ml:model.live.debounce.300ms` | Debounced live sync |
+| `ml:click` | Call `#[Action]` method |
+| `ml:submit.prevent` | Form submission action |
+| `ml:keydown.enter` | Key event → action |
+| `ml:loading` | Show element during round-trip |
+| `ml:dirty` | Reflect unsynced changes |
+| `ml:poll.5s` | Re-render on interval |
+| `ml:offline` | Show when browser is offline |
+| `ml:stream` | Target for streamed AI content |
+| `ml:transition` | CSS enter/leave transitions |
+
+### Streaming (AI / LLM)
+
+The `StreamClient` connects to SSE endpoints for real-time token streaming. This is the client-side counterpart of the PHP `Streams` concern — paired with MonkeysLegion Apex for server-driven AI rendering.
+
+```javascript
+import { StreamClient } from "monkeysjs/live";
+
+const stream = new StreamClient("/_live/stream");
+
+stream
+  .on("chunk", ({ content }) => {
+    document.querySelector('[ml\\:stream="reply"]').insertAdjacentHTML("beforeend", content);
+  })
+  .on("done", () => console.log("Stream complete"))
+  .connect("lc_abc123", "reply");
+```
+
+### File Uploads
+
+Chunked uploads with progress tracking, integrated with the live component lifecycle.
+
+```javascript
+import { uploadFile } from "monkeysjs/live";
+
+await uploadFile(file, "lc_abc123", "avatar", {
+  chunkSize: 1048576, // 1MB chunks
+  onProgress: (percent) => console.log(`${percent}%`),
+  onComplete: (result) => console.log("Done:", result.fileName),
+});
+```
+
+### Events
+
+MonkeysJS Live dispatches `CustomEvent`s at every lifecycle point:
+
+| Event | When |
+|-------|------|
+| `ml:mounted` | Component hydrated from DOM |
+| `ml:updated` | Component received a wire response |
+| `ml:destroyed` | Component cleaned up |
+| `ml:loading` | Loading state changed (start/end) |
+| `ml:dirty` | Unsynced state change detected |
+| `ml:emit` | Inter-component event from server |
+| `ml:wire-error` | Wire request failed |
+| `ml:upload-progress` | File upload chunk completed |
+| `ml:upload-complete` | File upload finished |
+
+### Runtime Size
+
+< 12 KB gzipped. Zero dependencies. No build step required — ships as ESM, works with `<script type="module">` or any bundler.
+
+---
 
 ## License
 
